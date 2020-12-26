@@ -85,12 +85,12 @@ function draw() {
     push();
     beginShape();
     for (let j = 0; j < detailedFontArray[0].length; j++) {
-        vertex(detailedFontArray[0][j].x-textWidth(studyLetter)/2+map(mouseY,-height/2,height/2,-20,20),detailedFontArray[0][j].y);
+        vertex(detailedFontArray[0][j].x-textWidth(studyLetter)/2+map(mouseY,0,height/2,-20,20),detailedFontArray[0][j].y);
     }
     for (let j = 1; j < detailedFontArray.length; j++) {
         beginContour();
         for (let k = 0; k < detailedFontArray[j].length; k++) {
-            vertex(detailedFontArray[j][k].x-textWidth(studyLetter)/2+map((k%2 == 0?mouseX:mouseY),-width/2,width/2,-20,20),detailedFontArray[j][k].y);
+            vertex(detailedFontArray[j][k].x-textWidth(studyLetter)/2+map((k%2 == 0?mouseX:mouseY),0,width/2,-20,20),detailedFontArray[j][k].y);
         }
         endContour();
     }
