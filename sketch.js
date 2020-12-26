@@ -6,17 +6,19 @@ let xHeightLevel;
 let xHeightRatio;
 let txtBaseLine;
 let detailedFontArray = [];
-let studyLetter = "ä";
+let studyLetters = ["ä","ë","ï","ÿ","ü","ö"];
+let lettersIndex = 0;
+let studyLetter = studyLetters[lettersIndex];
 let counterShapeIndex = 0;
 
 function preload() {
     f = loadFont('assets/Abril_Fatface.otf');
-    //f = loadFont('assets/Guaruja-Bold16.otf');
     
 }
 
 function setup() {
     createCanvas(windowWidth,windowHeight);
+    txtSize = windowHeight*0.8;
     textFont(f);
     textSize(width);
     fontArray = f.textToPoints("x", 0, textAscent(), width);
@@ -33,7 +35,7 @@ function setup() {
     textSize(txtSize);
     txtBaseLine = textAscent()*xHeightRatio/2 + height/2;
 
-    fontArray = f.textToPoints(studyLetter, width/2, txtBaseLine, txtSize, {
+    fontArray = f.textToPoints(studyLetters[lettersIndex], width/2, txtBaseLine, txtSize, {
         sampleFactor: 0.25,
         simplifyThreshold: 0
       });
@@ -97,6 +99,54 @@ function draw() {
     endShape(CLOSE);
     pop();
  
+}
+
+function mousePressed() {
+    if (lettersIndex >= studyLetters.length-1) {
+        lettersIndex = 0;
+    } else {
+        lettersIndex++;
+    }
+    fontArray = f.textToPoints(studyLetters[lettersIndex], width/2, txtBaseLine, txtSize, {
+        sampleFactor: 0.25,
+        simplifyThreshold: 0
+      });
+    
+    detailedFontArray = [];
+    
+    // detailed analysis
+    let _fontAnalysis = [];
+    let currP, prevP;
+    prevP = createVector(fontArray[0].x,fontArray[0].y);    
+    let j = 0;
+    let k = 0;
+    _fontAnalysis[j] = [];
+    _fontAnalysis[j][k] = prevP;
+    for (let i = 1; i < fontArray.length; i++) {
+        currP = createVector(fontArray[i].x,fontArray[i].y);
+        if (prevP.dist(currP) > 5) {
+            j++;
+            _fontAnalysis[j] = [];
+            k = 0;
+            _fontAnalysis[j][k] = currP;
+        } else {
+            k++;            
+            _fontAnalysis[j][k] = currP;
+        }
+        prevP = currP;
+    }
+
+    while (_fontAnalysis.length > 0) {
+        let vertexHighIndex = 0;
+        for (let i = 1; i < _fontAnalysis.length; i++) {
+            if (_fontAnalysis[i].length > _fontAnalysis[vertexHighIndex].length) {
+                vertexHighIndex = i;
+            }
+        }
+        detailedFontArray.push(_fontAnalysis[vertexHighIndex]);
+        _fontAnalysis.splice(vertexHighIndex,1)
+    }    
+
 }
 
 
