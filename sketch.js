@@ -6,14 +6,14 @@ let xHeightLevel;
 let xHeightRatio;
 let txtBaseLine;
 let detailedFontArray = [];
-let studyLetters = ["ä","ë","ï","ÿ","ü","ö"];
+let studyLetters = ["&"];
 let lettersIndex = 0;
 let studyLetter = studyLetters[lettersIndex];
 let counterShapeIndex = 0;
+let frame = 0;
 
 function preload() {
     f = loadFont('assets/Abril_Fatface.otf');
-    
 }
 
 function setup() {
@@ -35,12 +35,10 @@ function setup() {
     textSize(txtSize);
     txtBaseLine = textAscent()*xHeightRatio/2 + height/2;
 
-    fontArray = f.textToPoints(studyLetters[lettersIndex], width/2, txtBaseLine, txtSize, {
+    fontArray = f.textToPoints(studyLetters[lettersIndex], 0, txtBaseLine, txtSize, {
         sampleFactor: 0.25,
         simplifyThreshold: 0
       });
-    
-
     
     // detailed analysis
     let _fontAnalysis = [];
@@ -78,36 +76,46 @@ function setup() {
 }
 
 function draw() {
-    background(200);
-    colorMode(HSB,360,100,100);
+    colorMode(HSB,360,100,100,100);
+    background(46,73,100);
 
     noStroke();
-    fill(0,100,100);
+    noFill();
 
     push();
     beginShape();
     for (let j = 0; j < detailedFontArray[0].length; j++) {
-        vertex(detailedFontArray[0][j].x-textWidth(studyLetter)/2+map(mouseY,0,height/2,-20,20),detailedFontArray[0][j].y);
+        vertex(detailedFontArray[0][j].x+map(mouseY,0,height/2,-20,20),detailedFontArray[0][j].y);
+        push();
+        stroke(0,100,100);
+        line(detailedFontArray[0][j].x+map(mouseY,0,height/2,-20,20),detailedFontArray[0][j].y,map(j,0,detailedFontArray[0].length-1,0,width),0);
+        pop();
     }
     for (let j = 1; j < detailedFontArray.length; j++) {
         beginContour();
         for (let k = 0; k < detailedFontArray[j].length; k++) {
-            vertex(detailedFontArray[j][k].x-textWidth(studyLetter)/2+map((k%2 == 0?mouseX:mouseY),0,width/2,-20,20),detailedFontArray[j][k].y);
+            vertex(detailedFontArray[j][k].x+map(mouseY,0,width/2,-20,20),detailedFontArray[j][k].y);
         }
         endContour();
+        push();
+        stroke(0,100,100);
+        for (let k = 0; k < detailedFontArray[j].length; k++) {
+            line(detailedFontArray[j][k].x+map(mouseY,0,height/2,-20,20),detailedFontArray[j][k].y,map(k,0,detailedFontArray[j].length-1,0,width),height);
+        }
+        pop();        
     }
     endShape(CLOSE);
     pop();
  
+    frame++;
+
 }
 
-function mousePressed() {
-    if (lettersIndex >= studyLetters.length-1) {
-        lettersIndex = 0;
-    } else {
-        lettersIndex++;
-    }
-    fontArray = f.textToPoints(studyLetters[lettersIndex], width/2, txtBaseLine, txtSize, {
+function keyTyped() {
+
+    textSize(txtSize);
+
+    fontArray = f.textToPoints(key, 0, txtBaseLine, txtSize, {
         sampleFactor: 0.25,
         simplifyThreshold: 0
       });
@@ -147,6 +155,8 @@ function mousePressed() {
         _fontAnalysis.splice(vertexHighIndex,1)
     }    
 
+    return false;
+    
 }
 
 
